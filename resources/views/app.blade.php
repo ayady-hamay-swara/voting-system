@@ -28,10 +28,10 @@
                                 Dashboard
                             </a>
                         @else
-                            <a href="{{ route('login') }}"
-                               class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
-                                Log in
-                            </a>
+                           <button type="button" data-open-login
+        class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
+    Log in
+</button>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}"
                                    class="px-4 py-2 rounded-full bg-ballot-green-600 text-white hover:bg-ballot-green-700 transition">

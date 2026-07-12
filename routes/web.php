@@ -11,8 +11,19 @@ Route::post('/vote', [VoteController::class, 'store'])
     ->middleware('auth')
     ->name('vote.store');
 
+// GET /login just needs to exist so `route('login')` resolves for
+// Laravel's `auth` middleware redirects — it can point at the ballot
+// page itself since login happens through the modal, not a separate page.
+Route::get('/login', function () {
+   return view('partials.login-modal');
+// return redirect()->route('vote.index');
+})->name('login.show');
+
 Route::post('/login', function (Request $request) {
-    $credentials = $request->only('email', 'password');
+    $credentials = $request->validate([
+        'email'    => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
@@ -31,5 +42,3 @@ Route::post('/logout', function (Request $request) {
     return redirect(route('vote.index'));
 })->name('logout');
 
-// TODO: add a GET /register route + real registration page/handler once
-// you're ready — omitted for now since it also needs the users table wired up.

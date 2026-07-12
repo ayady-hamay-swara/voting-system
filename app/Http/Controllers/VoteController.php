@@ -16,7 +16,7 @@ class VoteController extends Controller
             $query->withCount('votes');
         }])->latest()->get();
 
-        return view('welcome', compact('topics'));
+        return view('vote', compact('topics'));
     }
 
     public function store(Request $request): RedirectResponse
