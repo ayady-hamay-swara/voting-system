@@ -47,13 +47,11 @@
     transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-input:checked + .vote-option .ballot-bubble,
-.vote-option[data-checked='true'] .ballot-bubble {
+.vote-option:has(input:checked) .ballot-bubble {
     border-color: var(--color-ballot-green-600);
 }
 
-input:checked + .vote-option .ballot-bubble::after,
-.vote-option[data-checked='true'] .ballot-bubble::after {
+.vote-option:has(input:checked) .ballot-bubble::after {
     transform: scale(1);
 }
 

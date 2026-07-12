@@ -17,10 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeModal = () => modal.close();
 
-    // Every vote option is a <label> wrapping a hidden radio input.
-    // Guests never actually select the radio — touching the option
-    // always opens the login modal first.
-    document.querySelectorAll('[data-vote-option]').forEach((option) => {
+    // Every vote option is a <label> wrapping a hidden radio input, inside
+    // a <form data-guest> when the visitor isn't logged in. For guests,
+    // touching any option opens the login modal instead of selecting it.
+    // Logged-in users get the real radio behaviour + a submit button.
+    document.querySelectorAll('form[data-guest] [data-vote-option]').forEach((option) => {
         option.addEventListener('click', (event) => {
             event.preventDefault();
             openModal(option.dataset.topicId, option.dataset.optionId);
