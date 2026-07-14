@@ -1,57 +1,130 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('app')
 
-        <title>@yield('title', config('app.name', 'Vote'))</title>
+@section('title', 'Admin')
 
-        @fonts
+@section('content')
+<div class="max-w-3xl mx-auto px-6 py-10">
 
-        <!-- Styles / Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="bg-ballot-green-50 text-ballot-ink font-sans antialiased min-h-screen flex flex-col">
+    @if (session('status'))
+        <div class="mb-6 px-4 py-3 rounded-xl bg-ballot-green-50 border border-ballot-green-200 text-ballot-green-700 text-sm">
+            {{ session('status') }}
+        </div>
+    @endif
 
-        <header class="bg-white border-b border-ballot-green-100">
-            <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-                <a href="{{ url('/') }}" class="flex items-center gap-2">
-                    <span class="flex items-center justify-center w-9 h-9 rounded-full bg-ballot-green-600 text-white font-serif text-lg">✓</span>
-                    <span class="font-serif text-xl font-semibold text-ballot-green-900">{{ config('app.name', 'Vote') }}</span>
-                </a>
+    @if ($errors->any())
+        <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                @if (Route::has('login'))
-                    <nav class="flex items-center gap-3 text-sm">
-                        @auth
-                            <a href="{{ url('/dashboard') }}"
-                               class="px-4 py-2 rounded-full border border-ballot-green-200 text-ballot-green-700 hover:bg-ballot-green-50 transition">
-                                Dashboard
-                            </a>
-                        @else
-                           <button type="button" data-open-login
-        class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
-    Log in
-</button>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}"
-                                   class="px-4 py-2 rounded-full bg-ballot-green-600 text-white hover:bg-ballot-green-700 transition">
-                                    Register
-                                </a>
-                            @endif
-                        @endauth
-                    </nav>
-                @endif
+    <div class="mb-10">
+        <p class="text-xs font-medium uppercase tracking-wider text-ballot-green-500 mb-1">Admin</p>
+        <h1 class="font-serif text-3xl font-semibold text-ballot-green-900">Manage topics</h1>
+        <p class="text-ballot-ink/60 mt-1">Add new topics with their options, or add more options to an existing topic.</p>
+    </div>
+
+    {{-- ============================= --}}
+    {{-- CREATE A NEW TOPIC            --}}
+    {{-- ============================= --}}
+    <div class="bg-white rounded-2xl border border-ballot-green-100 p-6 mb-10">
+        <h2 class="font-serif text-lg font-semibold text-ballot-green-900 mb-4">New topic</h2>
+
+        <form method="POST" action="{{ route('admin.topics.store') }}" id="new-topic-form">
+            @csrf
+
+            <label class="block text-sm font-medium text-ballot-ink mb-1" for="title">Title</label>
+            <input id="title" name="title" type="text" required
+                   class="w-full mb-4 px-3 py-2 rounded-lg border border-ballot-green-200 focus:outline-none focus:ring-2 focus:ring-ballot-green-400">
+
+            <label class="block text-sm font-medium text-ballot-ink mb-1" for="description">Description (optional)</label>
+            <textarea id="description" name="description" rows="2"
+                      class="w-full mb-4 px-3 py-2 rounded-lg border border-ballot-green-200 focus:outline-none focus:ring-2 focus:ring-ballot-green-400"></textarea>
+
+            <label class="block text-sm font-medium text-ballot-ink mb-2">Options</label>
+            <div id="option-fields" class="flex flex-col gap-2 mb-2">
+                <input type="text" name="options[]" placeholder="Option 1" required
+                       class="w-full px-3 py-2 rounded-lg border border-ballot-green-200 focus:outline-none focus:ring-2 focus:ring-ballot-green-400">
+                <input type="text" name="options[]" placeholder="Option 2" required
+                       class="w-full px-3 py-2 rounded-lg border border-ballot-green-200 focus:outline-none focus:ring-2 focus:ring-ballot-green-400">
             </div>
-        </header>
+            <button type="button" id="add-option-field"
+                    class="text-sm text-ballot-green-600 font-medium hover:underline mb-6">
+                + Add another option
+            </button>
 
-        <main class="flex-1">
-            @yield('content')
-        </main>
+            <button type="submit"
+                    class="px-5 py-2 rounded-full bg-ballot-green-600 text-white text-sm font-medium hover:bg-ballot-green-700 transition">
+                Create topic
+            </button>
+        </form>
+    </div>
 
-        <footer class="border-t border-ballot-green-100 py-6 text-center text-sm text-ballot-green-700/70">
-            &copy; {{ date('Y') }} {{ config('app.name', 'Vote') }} &mdash; every voice, counted.
-        </footer>
+    {{-- ============================= --}}
+    {{-- EXISTING TOPICS                --}}
+    {{-- ============================= --}}
+    <div class="flex flex-col gap-6">
+        @forelse ($topics as $topic)
+            <div class="bg-white rounded-2xl border border-ballot-green-100 p-6">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h3 class="font-serif text-lg font-semibold text-ballot-green-900">{{ $topic->title }}</h3>
+                        @if ($topic->description)
+                            <p class="text-sm text-ballot-ink/60">{{ $topic->description }}</p>
+                        @endif
+                    </div>
+                    <form method="POST" action="{{ route('admin.topics.destroy', $topic) }}"
+                          onsubmit="return confirm('Delete this topic and all its options?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-sm text-red-500 hover:underline">Delete</button>
+                    </form>
+                </div>
 
-        @include('partials.login-modal')
-    </body>
-</html>
+                <ul class="flex flex-col gap-1 mb-4">
+                    @forelse ($topic->options as $option)
+                        <li class="text-sm text-ballot-ink px-3 py-1.5 rounded-lg bg-ballot-green-50">{{ $option->label }}</li>
+                    @empty
+                        <li class="text-sm text-ballot-ink/50 italic">No options yet.</li>
+                    @endforelse
+                </ul>
+
+                <form method="POST" action="{{ route('admin.options.store', $topic) }}" class="flex gap-2">
+                    @csrf
+                    <input type="text" name="label" placeholder="New option label" required
+                           class="flex-1 px-3 py-2 rounded-lg border border-ballot-green-200 text-sm focus:outline-none focus:ring-2 focus:ring-ballot-green-400">
+                    <button type="submit"
+                            class="px-4 py-2 rounded-full bg-ballot-green-100 text-ballot-green-700 text-sm font-medium hover:bg-ballot-green-200 transition">
+                        Add option
+                    </button>
+                </form>
+            </div>
+        @empty
+            <div class="bg-white rounded-2xl border border-dashed border-ballot-green-200 p-10 text-center">
+                <p class="font-serif text-lg text-ballot-green-900">No topics yet</p>
+                <p class="text-sm text-ballot-ink/60 mt-1">Create your first one above.</p>
+            </div>
+        @endforelse
+    </div>
+
+</div>
+
+<script>
+    // Lets the admin add extra option fields to the "new topic" form on the fly.
+    document.getElementById('add-option-field')?.addEventListener('click', () => {
+        const container = document.getElementById('option-fields');
+        const count = container.querySelectorAll('input').length + 1;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'options[]';
+        input.placeholder = `Option ${count}`;
+        input.className = 'w-full px-3 py-2 rounded-lg border border-ballot-green-200 focus:outline-none focus:ring-2 focus:ring-ballot-green-400';
+
+        container.appendChild(input);
+    });
+</script>
+@endsection
