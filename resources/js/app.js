@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeButtons.forEach((btn) => btn.addEventListener('click', closeModal));
 
+    // Header "Log in" button — opens the modal directly, no topic/option context
+    document.querySelectorAll('[data-open-login]').forEach((btn) => {
+        btn.addEventListener('click', () => modal.showModal());
+    });
+
     // Click on the ::backdrop closes the dialog too
     modal.addEventListener('click', (event) => {
         if (event.target === modal) closeModal();

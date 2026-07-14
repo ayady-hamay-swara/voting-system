@@ -12,15 +12,23 @@ class VoteController extends Controller
 {
     public function index()
     {
+        if (auth()->check() && auth()->user()->is_admin) {
+            return redirect()->route('admin.index');
+        }
+
         $topics = Topic::with(['options' => function ($query) {
             $query->withCount('votes');
         }])->latest()->get();
 
-        return view('welcome', compact('topics'));
+        return view('vote', compact('topics'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        if ($request->user()->is_admin) {
+            abort(403, 'Admins cannot cast votes.');
+        }
+
         $validated = $request->validate([
             'topic_id'  => ['required', 'exists:topics,id'],
             'option_id' => ['required', 'exists:options,id'],

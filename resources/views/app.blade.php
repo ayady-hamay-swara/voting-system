@@ -20,27 +20,37 @@
                     <span class="font-serif text-xl font-semibold text-ballot-green-900">{{ config('app.name', 'Vote') }}</span>
                 </a>
 
-                @if (Route::has('login'))
-                    <nav class="flex items-center gap-3 text-sm">
-                        @auth
-                            <a href="{{ url('/dashboard') }}"
+                <nav class="flex items-center gap-3 text-sm">
+                    @auth
+                        <span class="text-ballot-ink/60">{{ auth()->user()->name }}</span>
+
+                        @if (auth()->user()->is_admin)
+                            <a href="{{ route('admin.index') }}"
                                class="px-4 py-2 rounded-full border border-ballot-green-200 text-ballot-green-700 hover:bg-ballot-green-50 transition">
-                                Dashboard
+                                Admin
                             </a>
-                        @else
-                            <a href="{{ route('login') }}"
-                               class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
-                                Log in
+                        @endif
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                    class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
+                                Log out
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" data-open-login
+                                class="px-4 py-2 rounded-full text-ballot-green-700 hover:bg-ballot-green-50 transition">
+                            Log in
+                        </button>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                               class="px-4 py-2 rounded-full bg-ballot-green-600 text-white hover:bg-ballot-green-700 transition">
+                                Register
                             </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}"
-                                   class="px-4 py-2 rounded-full bg-ballot-green-600 text-white hover:bg-ballot-green-700 transition">
-                                    Register
-                                </a>
-                            @endif
-                        @endauth
-                    </nav>
-                @endif
+                        @endif
+                    @endauth
+                </nav>
             </div>
         </header>
 
