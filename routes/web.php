@@ -15,8 +15,8 @@ Route::post('/vote', [VoteController::class, 'store'])
 // Laravel's `auth` middleware redirects — it can point at the ballot
 // page itself since login happens through the modal, not a separate page.
 Route::get('/login', function () {
-   return view('partials.login-modal');
-// return redirect()->route('vote.index');
+   //return view('partials.login-modal');
+ return redirect()->route('vote.index');
 })->name('login.show');
 
 Route::post('/login', function (Request $request) {
