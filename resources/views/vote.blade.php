@@ -3,6 +3,47 @@
 @section('title', 'Vote')
 
 @section('content')
+
+{{-- ============================= --}}
+{{-- HERO                          --}}
+{{-- ============================= --}}
+@php
+    $openTopicsCount = $topics->count();
+    $totalVotesCast = $topics->sum(fn ($topic) => $topic->options->sum('votes_count'));
+@endphp
+<section class="relative overflow-hidden bg-ballot-green-900">
+    {{-- decorative ring, echoes the ballot-bubble motif used on options --}}
+    <div class="pointer-events-none absolute -right-24 -top-24 w-96 h-96 rounded-full border-[3px] border-ballot-green-700/60"></div>
+    <div class="pointer-events-none absolute -right-10 top-32 w-56 h-56 rounded-full border-[3px] border-ballot-green-700/40"></div>
+
+    <div class="relative max-w-5xl mx-auto px-6 pt-16 pb-14">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-ballot-green-100 text-xs font-medium uppercase tracking-wider mb-5">
+            <span class="w-1.5 h-1.5 rounded-full bg-ballot-green-400"></span>
+            Open ballot
+        </span>
+
+        <h1 class="font-serif text-4xl sm:text-5xl font-semibold text-white leading-tight max-w-2xl">
+            Every voice counted, every vote verified.
+        </h1>
+        <p class="text-ballot-green-100/80 mt-4 max-w-lg">
+            Browse the topics below, pick an option, and sign in to make your vote official — it only takes a moment.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4 mt-8">
+            <a href="#vote"
+               class="px-6 py-3 rounded-full bg-white text-ballot-green-900 text-sm font-semibold hover:bg-ballot-green-50 transition">
+                Start voting
+            </a>
+
+            <div class="flex items-center gap-6 text-ballot-green-100/80 text-sm">
+                <span><strong class="text-white font-serif text-base">{{ $openTopicsCount }}</strong> open {{ Str::plural('topic', $openTopicsCount) }}</span>
+                <span class="w-px h-4 bg-ballot-green-700"></span>
+                <span><strong class="text-white font-serif text-base">{{ $totalVotesCast }}</strong> {{ Str::plural('vote', $totalVotesCast) }} cast so far</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="max-w-5xl mx-auto px-6 py-10">
 
     @if (session('status'))
@@ -12,8 +53,7 @@
     @endif
 
     <div class="mb-10">
-        <p class="text-xs font-medium uppercase tracking-wider text-ballot-green-500 mb-1">Open ballot</p>
-        <h1 class="font-serif text-3xl font-semibold text-ballot-green-900">Cast your vote</h1>
+        <h2 class="font-serif text-2xl font-semibold text-ballot-green-900">Cast your vote</h2>
         <p class="text-ballot-ink/60 mt-1">Pick one option per topic below. You'll be asked to sign in before your vote is counted.</p>
     </div>
 

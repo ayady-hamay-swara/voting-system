@@ -32,7 +32,7 @@ Route::post('/login', function (Request $request) {
             return redirect()->route('admin.index');
         }
 
-        return redirect($request->input('redirect_to', route('vote.index')));
+        return redirect($request->filled('redirect_to') ? $request->input('redirect_to') : route('vote.index'));
     }
 
     return back()->withErrors(['email' => 'Invalid credentials.']);
