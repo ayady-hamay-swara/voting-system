@@ -16,8 +16,8 @@
         <header class="bg-white border-b border-ballot-green-100">
             <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
                 <a href="{{ url('/') }}" class="flex items-center gap-2">
-                    <span class="flex items-center justify-center w-9 h-9 rounded-full bg-ballot-green-600 text-white font-serif text-lg">✓</span>
-                    <span class="font-serif text-xl font-semibold text-ballot-green-900">{{ config('app.name', 'Vote') }}</span>
+                    <img src="{{ asset('logo.png') }}" alt="Voting App Logo" class="w-10 h-auto " style="background-color: transparent !important;" >
+                    <span class="font-serif text-xl font-semibold text-ballot-green-900"><p>voting app</p></span>
                 </a>
 
                 <nav class="flex items-center gap-3 text-sm">
